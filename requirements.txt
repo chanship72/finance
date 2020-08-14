@@ -1,0 +1,6 @@
+BeautifulSoup4
+requests
+pandas
+openpyxl
+wordcloud
+konlpy
