@@ -1,4 +1,4 @@
-date,total,equity,kosdaq,total,kospi,kosdaq,lottery,Equity-backed
+date,loan.total,loan.kospi,loan.kosdaq,lend.total,lend.kospi,lend.kosdaq,lottery,equity.backed.loan
 2020-08-14,15900133,7674329,8225803,1102,865,238,0,17792117
 2020-08-13,15794045,7602319,8191726,1102,865,238,0,17798775
 2020-08-12,15628748,7504874,8123874,1102,865,238,0,17805650
