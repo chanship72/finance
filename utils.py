@@ -5,6 +5,13 @@ import requests
 import pandas as pd
 import re
 import os
+import FinanceDataReader as fdr
+import numpy as np
+import matplotlib.pyplot as plt
+
+from sklearn.metrics import r2_score
+from sklearn import preprocessing
+import scipy.stats
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 < naver 뉴스 검색시 리스트 크롤링하는 프로그램 > _select사용
@@ -112,8 +119,57 @@ def crawler(maxpage,query,sort,s_date,e_date):
     # outputFileName = '%s-%s-%s%s시%s분%s초merging.csv' % (now.year, now.month, now.day, now.hour, now.minute, now.second)
     # print(outputFileName)
     # df.to_csv(RESULT_PATH+"/"+outputFileName, index = False, header=True)
+
+def getIndexData(code, year):
+    df = fdr.DataReader(code, year+'-01-01', year+'-12-31')
+    return df
+
+def intersectionIdx(df, df_target):
+    df = df.loc[df.index.intersection(df_target.index)]
     
+    return df
+
+def normalize_minmax(df, column='Close'):
+#     scaler = preprocessing.MinMaxScaler()
+    scaler = preprocessing.StandardScaler()
+    df_minmax = scaler.fit_transform(np.array(df[column]).reshape(-1,1))
+
+    return df_minmax
+
+def analysisCoupling(base, target, year):
+    df_base = getIndexData(base, year)
+    df_target = getIndexData(target, year)
+
+    df_base = intersectionIdx(df_base, df_target)
+    df_target = intersectionIdx(df_target, df_base)
+
+    Vcorr = df_base['Close'].corr(df_target['Close'])
+#     print("pearson correlation", Vcorr)
+
+    df_base_minmax = normalize_minmax(df_base)
+    df_target_minmax = normalize_minmax(df_target)
+  
+    Vr2 = r2_score(df_base_minmax, df_target_minmax)
+#     print("normalized R2:", Vr2)
     
+    return Vcorr, Vr2
+
+def analyzeTrend(base, target, years):
+    corrList, r2List = [],[]
+
+    for y in years:
+        Vcorr, Vr2 = analysisCoupling(base, target, y)
+        corrList.append(Vcorr)
+        r2List.append(Vr2)
+    return corrList, r2List
+
+def plotTrend(years, corr, r2, title):
+    fig= plt.figure(figsize=(23,8))
+
+    plt.plot(years, corr, color='b', linestyle='--', label='pearson correlation')
+    plt.legend()
+    plt.title(title)
+    plt.show()
 
 # def main():
 #     # info_main = input("="*50+"\n"+"입력 형식에 맞게 입력해주세요."+"\n"+" 시작하시려면 Enter를 눌러주세요."+"\n"+"="*50)
