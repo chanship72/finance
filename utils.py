@@ -5,7 +5,6 @@ import requests
 import pandas as pd
 import re
 import os
-import FinanceDataReader as fdr
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -170,6 +169,44 @@ def plotTrend(years, corr, r2, title):
     plt.legend()
     plt.title(title)
     plt.show()
+
+def get_volumeKospiHistory(code, name, start_date, end_date):        
+    filePath = "Kospi/" + str(code).zfill(6) + "_" + name + ".csv"
+    data = pd.read_csv(filePath, engine='python')
+    
+    datetime_index = pd.to_datetime(data['date'])
+    df=data.set_index(datetime_index)
+#     df.drop('date',axis=1,inplace=True)
+    
+    df = df.loc[start_date:end_date]
+    
+    return df
+
+def get_volumeKosdaqHistory(code, name, start_date, end_date):
+    filePath = "Kosdaq/" + str(code).zfill(6) + "_" + name + ".csv"
+    data = pd.read_csv(filePath, engine='python')
+    
+    datetime_index = pd.to_datetime(data['date'])
+    df=data.set_index(datetime_index)
+#     df.drop('date',axis=1,inplace=True)
+    
+    df = df.loc[start_date:end_date]
+    
+    return df
+
+
+def get_priceHistory(code, name, start_date, end_date):
+    filePath = "Price_Edit/" + str(code).zfill(6) + "_" + name + ".csv"
+    data = pd.read_csv(filePath, engine='python')
+    
+    datetime_index = pd.to_datetime(data['date'])
+    df=data.set_index(datetime_index)
+#     df.drop('date',axis=1,inplace=True)
+    
+    df = df.loc[start_date:end_date]
+    
+    return df
+
 
 # def main():
 #     # info_main = input("="*50+"\n"+"입력 형식에 맞게 입력해주세요."+"\n"+" 시작하시려면 Enter를 눌러주세요."+"\n"+"="*50)
